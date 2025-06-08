@@ -1,6 +1,5 @@
 import random
 from statistics import median as get_median
-import matplotlib.pyplot as plt
 
 movies = [
     {
@@ -162,10 +161,12 @@ def update_movie(movie_name: str, new_movie_rating: float) -> None:
 
 def movies_stats(list_of_dictionary_of_movies: list[dict]) -> tuple:
     """
-    Return statistical information about the movie dictionary: average rating, median rating, best and worst movies.
+    Return statistical information about the movie dictionary:
+        average rating, median rating, best and worst movies.
 
     Args:
-        list_of_dictionary_of_movies (list[dict]) : A dictionary with movie titles as keys and ratings (0–10) as values.
+        list_of_dictionary_of_movies (list[dict]) :
+            A dictionary with movie titles as keys and ratings (0–10) as values.
 
     Returns:
         tuple:
@@ -202,7 +203,8 @@ def get_random_movie(list_of_dict_of_movies: list[dict]) -> dict:
     Return a random movie dict from the list of dictionaries of movies.
 
     Args:
-        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]):
+            A dictionary with movie names as keys and ratings as values.
 
     Returns:
         dict: A randomly selected movie dict.
@@ -222,7 +224,8 @@ def search_movie(list_of_dict_of_movies: list[dict], part_of_movie_name: str) ->
     Return all movies containing the input string, case-insensitive.
 
     Args:
-        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]):
+            A dictionary with movie names as keys and ratings as values.
         part_of_movie_name (str): A substring to search for within movie titles.
 
     Returns:
@@ -249,7 +252,8 @@ def sort_movies_by_rating(list_of_dict_of_movies: list[dict]) -> list:
     Sort movies by rating in descending order.
 
     Args:
-        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]):
+            A dictionary with movie names as keys and ratings as values.
 
     Returns:
         list of tuple: A list of (movie name, rating) pairs sorted by rating in descending order.
@@ -260,7 +264,8 @@ def sort_movies_by_rating(list_of_dict_of_movies: list[dict]) -> list:
 
     ensure_not_empty(list_of_dict_of_movies)
 
-    sorted_movie_list = sorted(((m["title"], m["rating"]) for m in movies), key=lambda t: t[1], reverse=True)
+    sorted_movie_list = sorted(((m["title"], m["rating"]) for m in movies),
+                               key=lambda t: t[1], reverse=True)
     return sorted_movie_list
 
 
@@ -269,10 +274,12 @@ def sort_movies_by_year(list_of_dict_of_movies: list[dict]) -> list:
     Sort movies by year in descending order.
 
     Args:
-        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]):
+            A dictionary with movie names as keys and ratings as values.
 
     Returns:
-        list of tuple: A list of (movie name, rating) pairs sorted by rating in descending order.
+        list of tuple: A list of (movie name, rating) pairs
+            sorted by rating in descending order.
 
     Raises:
         ValueError: If the dictionary is empty.
@@ -280,17 +287,20 @@ def sort_movies_by_year(list_of_dict_of_movies: list[dict]) -> list:
 
     ensure_not_empty(list_of_dict_of_movies)
 
-    sorted_movie_list = sorted(((m["title"], m["year"]) for m in movies), key=lambda t: t[1], reverse=True)
+    sorted_movie_list = sorted(((m["title"], m["year"]) for m in movies),
+                               key=lambda t: t[1], reverse=True)
     return sorted_movie_list
 
 
-def filter_movies(list_of_dict_of_movies: list[dict], start_rating: float, start_year: int, end_year: int) -> list[
+def filter_movies(list_of_dict_of_movies: list[dict],
+                  start_rating: float, start_year: int, end_year: int) -> list[
     dict]:
     """
     Filter movies by a minimum rating and a range of years.
 
     Args:
-        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.:
+        list_of_dict_of_movies (list[dict]):
+            A dictionary with movie names as keys and ratings as values.:
         start_rating (float): The minimum rating to filter.
         start_year (int): The minimum year to filter.
         end_year (int): The maximum year to filter.
@@ -303,17 +313,9 @@ def filter_movies(list_of_dict_of_movies: list[dict], start_rating: float, start
 
     filtered_list_of_movies = []
     for movie in list_of_dict_of_movies:
-        if movie["year"] >= start_year and movie["year"] <= end_year and movie["rating"] >= start_rating:
+        if start_year <= movie["year"] <= end_year and movie["rating"] >= start_rating:
             filtered_list_of_movies.append(movie)
     return filtered_list_of_movies
-
-
-def create_histogram(list_of_dict_of_movies: list[dict]) -> None:
-    ratings_list = []
-    for movie in list_of_dict_of_movies:
-        ratings_list.append(movie["rating"])
-    plt.hist(ratings_list)
-    plt.show()
 
 
 def main():
@@ -337,9 +339,8 @@ def main():
         8. Movies sorted by rating
         9. Create rating histogram
         10. Filter movies
-        11. Create rating histogram
 
-        Enter choice (0-11):
+        Enter choice (0-10):
 
         """
     while True:
@@ -466,7 +467,8 @@ def main():
                 pause()
 
         elif user_choice == "10":
-            minimum_rating = float(input("Enter minimum rating (leave blank for no minimum rating): "))
+            minimum_rating = float(input("Enter minimum rating "
+                                         "(leave blank for no minimum rating): "))
             start_year = int(input("Enter start year (leave blank for no start year): "))
             end_year = int(input("Enter end year (leave blank for no end year): "))
             filtered_movies = filter_movies(movies, minimum_rating, start_year, end_year)
@@ -474,12 +476,8 @@ def main():
                 print(f"{movie['title']} ({movie['year']}): {movie['rating']}")
             pause()
 
-        elif user_choice == "11":
-            create_histogram(movies)
-            pause()
-
         else:
-            print("Invalid choice. Please choose a number between 0 and 11.")
+            print("Invalid choice. Please choose a number between 0 and 10.")
             pause()
 
 
