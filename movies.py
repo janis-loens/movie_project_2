@@ -1,19 +1,7 @@
+import random
 from statistics import median as get_median
 import matplotlib.pyplot as plt
-import random
 
-"""movies = {
-    "The Shawshank Redemption": 9.5,
-    "Pulp Fiction": 8.8,
-    "The Room": 3.6,
-    "The Godfather": 9.2,
-    "The Godfather: Part II": 9.0,
-    "The Dark Knight": 9.0,
-    "12 Angry Men": 8.9,
-    "Everything Everywhere All At Once": 8.9,
-    "Forrest Gump": 8.8,
-    "Star Wars: Episode V": 8.7
-}"""
 movies = [
     {
         "title": "The Shawshank Redemption",
@@ -58,8 +46,13 @@ def ensure_not_empty(list_of_dicts_of_movies: list[dict]) -> None:
 
 
 def get_valid_name() -> str:
+    """
+    Check if Name is in the list of movie names.
+    Returns:
+        str: A name if it is in the list of movie names.
+    """
     movie_name = input("Enter a movie name: ")
-    for i, movie in enumerate(movies):
+    for movie in enumerate(movies):
         if movie["title"] == movie_name:
             return movie_name
     else:
@@ -76,7 +69,7 @@ def get_valid_rating() -> float:
     while True:
         try:
             rating = float(input("Enter a movie rating (0–10): "))
-            if not (0 <= rating <= 10):
+            if not 0 <= rating <= 10:
                 raise ValueError
             return rating
         except ValueError:
@@ -187,7 +180,7 @@ def movies_stats(list_of_dictionary_of_movies: list[dict]) -> tuple:
 
     ensure_not_empty(list_of_dictionary_of_movies)
 
-    ratings = list((movie["rating"]for movie in list_of_dictionary_of_movies))
+    ratings = list((movie["rating"] for movie in list_of_dictionary_of_movies))
     sum_of_ratings = sum(ratings)
 
     best_movie = max(
@@ -222,6 +215,7 @@ def get_random_movie(list_of_dict_of_movies: list[dict]) -> dict:
 
     random_movie = random.choice(list_of_dict_of_movies)
     return random_movie
+
 
 def search_movie(list_of_dict_of_movies: list[dict], part_of_movie_name: str) -> list:
     """
@@ -290,7 +284,8 @@ def sort_movies_by_year(list_of_dict_of_movies: list[dict]) -> list:
     return sorted_movie_list
 
 
-def filter_movies(list_of_dict_of_movies: list[dict], start_rating: float, start_year: int, end_year: int) -> list[dict]:
+def filter_movies(list_of_dict_of_movies: list[dict], start_rating: float, start_year: int, end_year: int) -> list[
+    dict]:
     """
     Filter movies by a minimum rating and a range of years.
 
@@ -320,6 +315,7 @@ def create_histogram(list_of_dict_of_movies: list[dict]) -> None:
     plt.hist(ratings_list)
     plt.show()
 
+
 def main():
     """
     Main loop for the movie database CLI. Presents options to the user
@@ -328,7 +324,7 @@ def main():
 
     menu_text = """
         ********** My Movies Database **********
-    
+
         Menu:
         0. Quit
         1. List movies
@@ -342,9 +338,9 @@ def main():
         9. Create rating histogram
         10. Filter movies
         11. Create rating histogram
-    
+
         Enter choice (0-11):
-        
+
         """
     while True:
         user_choice = input(menu_text)
@@ -368,8 +364,8 @@ def main():
                 add_movie(input_movie_name, input_rating, input_year)
                 print(f"Movie '{input_movie_name}' successfully added.")
 
-            except ValueError as ve:
-                print(f"Error: {ve}")
+            except ValueError as v_e:
+                print(f"Error: {v_e}")
 
             finally:
                 pause()
@@ -380,8 +376,8 @@ def main():
                 delete_movie(input_movie_name)
                 print(f"Movie '{input_movie_name}' successfully deleted.")
 
-            except KeyError as ke:
-                print(f"Error: {ke}")
+            except KeyError as k_e:
+                print(f"Error: {k_e}")
 
             finally:
                 pause()
@@ -393,11 +389,11 @@ def main():
                 update_movie(input_movie_name, input_new_rating)
                 print(f"Movie '{input_movie_name}' successfully updated.")
 
-            except KeyError as ke:
-                print(f"Error: {ke}")
+            except KeyError as k_e:
+                print(f"Error: {k_e}")
 
-            except ValueError as ve:
-                print(f"Error: {ve}")
+            except ValueError as v_e:
+                print(f"Error: {v_e}")
 
             finally:
                 pause()
@@ -411,8 +407,8 @@ def main():
                 print(f"Best movie: {best_movie[0]}, {best_movie[1]}")
                 print(f"Worst movie: {worst_movie[0]}, {worst_movie[1]}")
 
-            except ValueError as ve:
-                print(f"Error: {ve}")
+            except ValueError as v_e:
+                print(f"Error: {v_e}")
 
             finally:
                 pause()
@@ -420,10 +416,11 @@ def main():
         elif user_choice == "6":
             try:
                 random_movie = get_random_movie(movies)
-                print(f"Your movie for tonight: {random_movie['title']}, it's rated {random_movie['rating']}.")
+                print(f"Your movie for tonight: {random_movie['title']},"
+                      f" it's rated {random_movie['rating']}.")
 
-            except ValueError as ve:
-                print(f"Error: {ve}")
+            except ValueError as v_e:
+                print(f"Error: {v_e}")
 
             finally:
                 pause()
@@ -435,11 +432,11 @@ def main():
                 for movie_name, movie_rating in list_of_movies_with_part_in_it:
                     print(f"{movie_name}: {movie_rating}")
 
-            except ValueError as ve:
-                print(f"Error: {ve}.")
+            except ValueError as v_e:
+                print(f"Error: {v_e}.")
 
-            except KeyError as ke:
-                print(f"Error: {ke}.")
+            except KeyError as k_e:
+                print(f"Error: {k_e}.")
 
             finally:
                 pause()
@@ -450,8 +447,8 @@ def main():
                 for movie_name, movie_rating in movies_sorted_by_rating:
                     print(f"{movie_name}: {movie_rating}")
 
-            except ValueError as ve:
-                print(f"Error: {ve}.")
+            except ValueError as v_e:
+                print(f"Error: {v_e}.")
 
             finally:
                 pause()
@@ -462,8 +459,8 @@ def main():
                 for movie_name, movie_year in movies_sorted_by_year:
                     print(f"{movie_name}: {movie_year}")
 
-            except ValueError as ve:
-                print(f"Error: {ve}.")
+            except ValueError as v_e:
+                print(f"Error: {v_e}.")
 
             finally:
                 pause()
