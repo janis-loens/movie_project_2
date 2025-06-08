@@ -2,7 +2,7 @@ from statistics import median as get_median
 import matplotlib.pyplot as plt
 import random
 
-movies = {
+"""movies = {
     "The Shawshank Redemption": 9.5,
     "Pulp Fiction": 8.8,
     "The Room": 3.6,
@@ -13,7 +13,19 @@ movies = {
     "Everything Everywhere All At Once": 8.9,
     "Forrest Gump": 8.8,
     "Star Wars: Episode V": 8.7
-}
+}"""
+movies = [
+    {
+        "title": "The Shawshank Redemption",
+        "rating": 9.5,
+        "year": 2012,
+    },
+    {
+        "title": "Pulp Fiction",
+        "rating": 8.8,
+        "year": 2012,
+    },
+]
 
 
 def pause() -> None:
@@ -27,11 +39,12 @@ def pause() -> None:
     input("\nPress Enter to continue.")
 
 
-def ensure_not_empty(dict_of_movies: dict) -> None:
+def ensure_not_empty(list_of_dicts_of_movies: list[dict]) -> None:
     """
     Ensures a dictionary is not empty.
     Args:
-        dict_of_movies (dict): A dictionary
+        list_of_dicts_of_movies (list[dict]): A list that contains dictionaries of movies.
+        This contains the keys "title", "rating" and "year".
 
     Returns:
         None
@@ -40,8 +53,17 @@ def ensure_not_empty(dict_of_movies: dict) -> None:
         ValueError: If the dictionary is empty.
     """
 
-    if not dict_of_movies:
-        raise ValueError("Dictionary is empty.")
+    if not list_of_dicts_of_movies:
+        raise ValueError("List is empty.")
+
+
+def get_valid_name() -> str:
+    movie_name = input("Enter a movie name: ")
+    for i, movie in enumerate(movies):
+        if movie["title"] == movie_name:
+            return movie_name
+    else:
+        raise KeyError(f"Movie '{movie_name}' does not exist in the database.")
 
 
 def get_valid_rating() -> float:
@@ -61,23 +83,25 @@ def get_valid_rating() -> float:
             print("Invalid rating. Please enter a number between 0 and 10.")
 
 
-def list_movies(dict_of_movies: dict) -> None:
+def list_movies(list_of_dicts_of_movies: list[dict]) -> None:
     """
     Prints the total number of movies and their ratings from a given dictionary.
 
     Args:
-        dict_of_movies (dict): A dictionary with movie names as keys and their ratings as values.
+        list_of_dicts_of_movies (list[dict]): A list that contains dictionaries of movies.
+        This contains the keys "title", "rating" and "year".
 
     Returns:
         None
     """
 
-    print(f"The Database contains a total of {len(dict_of_movies)} movies.\n")
-    for movie_name, rating in dict_of_movies.items():
-        print(f"{movie_name}: {rating}")
+    print(f"The Database contains a total of {len(list_of_dicts_of_movies)} movies.\n")
+    for movie in list_of_dicts_of_movies:
+        for key, value in movie.items():
+            print(f"{key.title()}: {value}")
 
 
-def add_movie(movie_name: str, movie_rating: float) -> None:
+def add_movie(movie_name: str, movie_rating: float, movie_year: int) -> None:
     """
     Add a movie to the movie dictionary, unless it is already in the dictionary.
 
@@ -91,10 +115,10 @@ def add_movie(movie_name: str, movie_rating: float) -> None:
     Raises:
         ValueError: If movie name already exists.
     """
-
-    if movie_name in movies:
-        raise ValueError(f"Movie '{movie_name}' already exists.")
-    movies[movie_name] = movie_rating
+    for movie in movies:
+        if movie_name in movie["title"]:
+            raise ValueError(f"Movie '{movie_name}' already exists.")
+    movies.append({"title": movie_name, "rating": movie_rating, "year": movie_year})
 
 
 def delete_movie(movie_name: str) -> None:
@@ -110,10 +134,12 @@ def delete_movie(movie_name: str) -> None:
     Raises:
         KeyError: If movie name does not exist.
     """
-
-    if movie_name not in movies:
-        raise KeyError(f"Movie '{movie_name}' does not exist.")
-    del movies[movie_name]
+    for i, movie in enumerate(movies):
+        if movie["title"] == movie_name:
+            del movies[i]
+            break
+    else:
+        raise KeyError(f"Movie '{movie_name}' does not exist in the database.")
 
 
 def update_movie(movie_name: str, new_movie_rating: float) -> None:
@@ -132,17 +158,21 @@ def update_movie(movie_name: str, new_movie_rating: float) -> None:
 
     """
 
-    if movie_name not in movies:
-        raise KeyError(f"Movie '{movie_name}' does not exist.")
-    movies[movie_name] = new_movie_rating
+    for i, movie in enumerate(movies):
+        if movie["title"] == movie_name:
+            movies[i]["rating"] = new_movie_rating
+            break
+
+    else:
+        raise KeyError(f"Movie '{movie_name}' does not exist in the database.")
 
 
-def movies_stats(dictionary_of_movies: dict) -> tuple:
+def movies_stats(list_of_dictionary_of_movies: list[dict]) -> tuple:
     """
     Return statistical information about the movie dictionary: average rating, median rating, best and worst movies.
 
     Args:
-        dictionary_of_movies (dict): A dictionary with movie titles as keys and ratings (0–10) as values.
+        list_of_dictionary_of_movies (list[dict]) : A dictionary with movie titles as keys and ratings (0–10) as values.
 
     Returns:
         tuple:
@@ -155,44 +185,50 @@ def movies_stats(dictionary_of_movies: dict) -> tuple:
         ValueError: If the dictionary is empty.
     """
 
-    ensure_not_empty(dictionary_of_movies)
+    ensure_not_empty(list_of_dictionary_of_movies)
 
-    ratings = list(dictionary_of_movies.values())
+    ratings = list((movie["rating"]for movie in list_of_dictionary_of_movies))
     sum_of_ratings = sum(ratings)
 
-    best_movie = max(dictionary_of_movies.items(), key=lambda x: x[1])
-    worst_movie = min(dictionary_of_movies.items(), key=lambda x: x[1])
+    best_movie = max(
+        ((m["title"], m["rating"]) for m in movies),
+        key=lambda t: t[1]
+    )
+    worst_movie = min(
+        ((m["title"], m["rating"]) for m in movies),
+        key=lambda t: t[1]
+    )
     average_rating = sum_of_ratings / len(ratings)
     median_rating = get_median(ratings)
 
     return average_rating, best_movie, worst_movie, median_rating
 
 
-def get_random_movie(dict_of_movies: dict) -> tuple:
+def get_random_movie(list_of_dict_of_movies: list[dict]) -> dict:
     """
-    Return a random movie and its rating from the dictionary.
+    Return a random movie dict from the list of dictionaries of movies.
 
     Args:
-        dict_of_movies (dict): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
 
     Returns:
-        tuple: A randomly selected (movie name, rating) pair.
+        dict: A randomly selected movie dict.
 
     Raises:
         ValueError: If the dictionary is empty.
     """
 
-    ensure_not_empty(dict_of_movies)
+    ensure_not_empty(list_of_dict_of_movies)
 
-    random_movie = random.choice(list(dict_of_movies.items()))
+    random_movie = random.choice(list_of_dict_of_movies)
     return random_movie
 
-def search_movie(dict_of_movies: dict, part_of_movie_name: str) -> list:
+def search_movie(list_of_dict_of_movies: list[dict], part_of_movie_name: str) -> list:
     """
     Return all movies containing the input string, case-insensitive.
 
     Args:
-        dict_of_movies (dict): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
         part_of_movie_name (str): A substring to search for within movie titles.
 
     Returns:
@@ -203,23 +239,23 @@ def search_movie(dict_of_movies: dict, part_of_movie_name: str) -> list:
         KeyError: If no movies match the search string.
     """
 
-    ensure_not_empty(dict_of_movies)
+    ensure_not_empty(list_of_dict_of_movies)
 
     list_of_movie_tuples = []
-    for movie_name, movie_rating in dict_of_movies.items():
-        if part_of_movie_name.lower() in movie_name.lower():
-            list_of_movie_tuples.append((movie_name, movie_rating))
+    for movie in list_of_dict_of_movies:
+        if part_of_movie_name.lower() in movie["title"].lower():
+            list_of_movie_tuples.append((movie["title"], movie["rating"]))
     if len(list_of_movie_tuples) == 0:
         raise KeyError(f"Movie with '{part_of_movie_name}' in it could not be found.")
     return list_of_movie_tuples
 
 
-def sort_movies_by_rating(dict_of_movies: dict) -> list:
+def sort_movies_by_rating(list_of_dict_of_movies: list[dict]) -> list:
     """
     Sort movies by rating in descending order.
 
     Args:
-        dict_of_movies (dict): A dictionary with movie names as keys and ratings as values.
+        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
 
     Returns:
         list of tuple: A list of (movie name, rating) pairs sorted by rating in descending order.
@@ -228,15 +264,59 @@ def sort_movies_by_rating(dict_of_movies: dict) -> list:
         ValueError: If the dictionary is empty.
     """
 
-    ensure_not_empty(dict_of_movies)
+    ensure_not_empty(list_of_dict_of_movies)
 
-    sorted_movie_list = sorted(dict_of_movies.items(), key=lambda x: x[1], reverse=True)
+    sorted_movie_list = sorted(((m["title"], m["rating"]) for m in movies), key=lambda t: t[1], reverse=True)
     return sorted_movie_list
 
-def create_histogram(dict_of_movies):
+
+def sort_movies_by_year(list_of_dict_of_movies: list[dict]) -> list:
+    """
+    Sort movies by year in descending order.
+
+    Args:
+        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.
+
+    Returns:
+        list of tuple: A list of (movie name, rating) pairs sorted by rating in descending order.
+
+    Raises:
+        ValueError: If the dictionary is empty.
+    """
+
+    ensure_not_empty(list_of_dict_of_movies)
+
+    sorted_movie_list = sorted(((m["title"], m["year"]) for m in movies), key=lambda t: t[1], reverse=True)
+    return sorted_movie_list
+
+
+def filter_movies(list_of_dict_of_movies: list[dict], start_rating: float, start_year: int, end_year: int) -> list[dict]:
+    """
+    Filter movies by a minimum rating and a range of years.
+
+    Args:
+        list_of_dict_of_movies (list[dict]): A dictionary with movie names as keys and ratings as values.:
+        start_rating (float): The minimum rating to filter.
+        start_year (int): The minimum year to filter.
+        end_year (int): The maximum year to filter.
+
+    Returns:
+        list of dict: A list of filtered movie dicts.
+
+    """
+    ensure_not_empty(list_of_dict_of_movies)
+
+    filtered_list_of_movies = []
+    for movie in list_of_dict_of_movies:
+        if movie["year"] >= start_year and movie["year"] <= end_year and movie["rating"] >= start_rating:
+            filtered_list_of_movies.append(movie)
+    return filtered_list_of_movies
+
+
+def create_histogram(list_of_dict_of_movies: list[dict]) -> None:
     ratings_list = []
-    for rating in dict_of_movies.values():
-        ratings_list.append(rating)
+    for movie in list_of_dict_of_movies:
+        ratings_list.append(movie["rating"])
     plt.hist(ratings_list)
     plt.show()
 
@@ -261,8 +341,9 @@ def main():
         8. Movies sorted by rating
         9. Create rating histogram
         10. Filter movies
+        11. Create rating histogram
     
-        Enter choice (1-10):
+        Enter choice (0-11):
         
         """
     while True:
@@ -283,7 +364,8 @@ def main():
 
             try:
                 input_rating = get_valid_rating()
-                add_movie(input_movie_name, input_rating)
+                input_year = int(input("Enter the year the movie was released: "))
+                add_movie(input_movie_name, input_rating, input_year)
                 print(f"Movie '{input_movie_name}' successfully added.")
 
             except ValueError as ve:
@@ -293,9 +375,8 @@ def main():
                 pause()
 
         elif user_choice == "3":
-            input_movie_name = input("Enter a movie name to delete: ")
-
             try:
+                input_movie_name = get_valid_name()
                 delete_movie(input_movie_name)
                 print(f"Movie '{input_movie_name}' successfully deleted.")
 
@@ -306,12 +387,8 @@ def main():
                 pause()
 
         elif user_choice == "4":
-            input_movie_name = input("Enter a movie name to update: ")
-
             try:
-                if input_movie_name not in movies:
-                    raise KeyError(f"Movie '{input_movie_name}' does not exist.")
-
+                input_movie_name = get_valid_name()
                 input_new_rating = get_valid_rating()
                 update_movie(input_movie_name, input_new_rating)
                 print(f"Movie '{input_movie_name}' successfully updated.")
@@ -342,8 +419,8 @@ def main():
 
         elif user_choice == "6":
             try:
-                movie_name, movie_rating = get_random_movie(movies)
-                print(f"Your movie for tonight: {movie_name}, it's rated {movie_rating}.")
+                random_movie = get_random_movie(movies)
+                print(f"Your movie for tonight: {random_movie['title']}, it's rated {random_movie['rating']}.")
 
             except ValueError as ve:
                 print(f"Error: {ve}")
@@ -380,11 +457,32 @@ def main():
                 pause()
 
         elif user_choice == "9":
+            try:
+                movies_sorted_by_year = sort_movies_by_year(movies)
+                for movie_name, movie_year in movies_sorted_by_year:
+                    print(f"{movie_name}: {movie_year}")
+
+            except ValueError as ve:
+                print(f"Error: {ve}.")
+
+            finally:
+                pause()
+
+        elif user_choice == "10":
+            minimum_rating = float(input("Enter minimum rating (leave blank for no minimum rating): "))
+            start_year = int(input("Enter start year (leave blank for no start year): "))
+            end_year = int(input("Enter end year (leave blank for no end year): "))
+            filtered_movies = filter_movies(movies, minimum_rating, start_year, end_year)
+            for movie in filtered_movies:
+                print(f"{movie['title']} ({movie['year']}): {movie['rating']}")
+            pause()
+
+        elif user_choice == "11":
             create_histogram(movies)
             pause()
 
         else:
-            print("Invalid choice. Please choose a number between 1 and 9.")
+            print("Invalid choice. Please choose a number between 0 and 11.")
             pause()
 
 
