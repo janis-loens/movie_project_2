@@ -2,8 +2,6 @@ import random
 from statistics import median as get_median
 import movie_storage
 
-movies = []
-
 
 def pause() -> None:
     """
@@ -38,7 +36,12 @@ def get_valid_name() -> str:
     Returns:
         str: A name if it is in the list of movie names.
     """
-    movie_name = input("Enter a movie name: ")
+    while True:
+        movie_name = input("Enter a movie name: ")
+        if movie_name:
+            break
+        else:
+            print("You have to enter a movie name.")
     list_of_dicts_of_movies = movie_storage.get_movies()
     for movie in list_of_dicts_of_movies:
         if movie["title"] == movie_name:
@@ -74,7 +77,7 @@ def list_movies() -> None:
     list_of_dicts_of_movies = movie_storage.get_movies()
     print(f"The Database contains a total of {len(list_of_dicts_of_movies)} movies.\n")
     for movie in list_of_dicts_of_movies:
-        print(f"{movie['title']} ({movie["year"]}): {movie['rating']}")
+        print(f"{movie['title']} ({movie['year']}): {movie['rating']}")
 
 
 def add_movie(movie_name: str, movie_rating: float, movie_year: int) -> None:
@@ -161,18 +164,23 @@ def movies_stats() -> tuple:
     ratings = list((movie["rating"] for movie in list_of_dicts_of_movies))
     sum_of_ratings = sum(ratings)
 
-    best_movie = max(
-        ((m["title"], m["rating"]) for m in list_of_dicts_of_movies),
-        key=lambda t: t[1]
-    )
-    worst_movie = min(
-        ((m["title"], m["rating"]) for m in list_of_dicts_of_movies),
-        key=lambda t: t[1]
-    )
+    max_rating = max(m["rating"] for m in list_of_dicts_of_movies)
+    best_movies = [
+    (m["title"], m["rating"])
+    for m in list_of_dicts_of_movies
+    if m["rating"] == max_rating
+]
+    min_rating = min(m["rating"] for m in list_of_dicts_of_movies)
+    worst_movies = [
+    (m["title"], m["rating"])
+    for m in list_of_dicts_of_movies
+    if m["rating"] == min_rating
+    ]
+
     average_rating = sum_of_ratings / len(ratings)
     median_rating = get_median(ratings)
 
-    return average_rating, best_movie, worst_movie, median_rating
+    return average_rating, best_movies, worst_movies, median_rating
 
 
 def get_random_movie() -> dict:
@@ -325,8 +333,12 @@ def main():
             pause()
 
         elif user_choice == "2":
-            input_movie_name = input("Enter a movie name: ")
-
+            while True:
+                input_movie_name = input("Enter movie name: ")
+                if input_movie_name:
+                    break
+                else:
+                    print("Invalid input. You have to enter a movie name.")
             try:
                 input_rating = get_valid_rating()
                 while True:
@@ -376,11 +388,15 @@ def main():
 
         elif user_choice == "5":
             try:
-                average_rating, best_movie, worst_movie, median_rating = movies_stats()
+                average_rating, best_movies, worst_movies, median_rating = movies_stats()
                 print(f"Average rating: {average_rating}")
                 print(f"Median rating: {median_rating}")
-                print(f"Best movie: {best_movie[0]}, {best_movie[1]}")
-                print(f"Worst movie: {worst_movie[0]}, {worst_movie[1]}")
+                print(f"Best movie(s):")
+                for title, rating in best_movies:
+                   print(f"\t{title}, {rating}")
+                print(f"Worst movie(s):")
+                for title, rating in worst_movies:
+                    print(f"\t{title}, {rating}")
 
             except ValueError as v_e:
                 print(f"Error: {v_e}")
@@ -402,7 +418,12 @@ def main():
 
         elif user_choice == "7":
             try:
-                part_of_movie_name = input("Enter a part of the movie name: ")
+                while True:
+                    part_of_movie_name = input("Enter a part of the movie name: ")
+                    if part_of_movie_name:
+                        break
+                    else:
+                        print("You have to enter a part of the movie name.")
                 list_of_movies_with_part_in_it = search_movie(part_of_movie_name)
                 for movie_name, movie_rating in list_of_movies_with_part_in_it:
                     print(f"{movie_name}: {movie_rating}")
@@ -441,12 +462,27 @@ def main():
                 pause()
 
         elif user_choice == "10":
-            min_rating_input = input("Enter minimum rating (leave blank for no minimum rating): ").strip()
-            minimum_rating = float(min_rating_input) if min_rating_input else None
-            start_year_input = input("Enter start year (leave blank for no start year): ").strip()
-            start_year = int(start_year_input) if start_year_input else None
-            end_year_input = input("Enter end year (leave blank for no end year): ")
-            end_year = int(end_year_input) if end_year_input else None
+            while True:
+                min_rating_input = input("Enter minimum rating (leave blank for no minimum rating): ").strip()
+                try:
+                    minimum_rating = float(min_rating_input) if min_rating_input else None
+                    break
+                except ValueError as v_e:
+                    print(f"Error: Please enter a number(0.1-10.0) for minimum rating.")
+            while True:
+                start_year_input = input("Enter start year (leave blank for no start year): ").strip()
+                try:
+                    start_year = int(start_year_input) if start_year_input else None
+                    break
+                except ValueError as v_e:
+                    print(f"Error: Please enter a year (e.g. 1998).")
+            while True:
+                end_year_input = input("Enter end year (leave blank for no end year): ").strip()
+                try:
+                    end_year = int(end_year_input) if end_year_input else None
+                    break
+                except ValueError as v_e:
+                    print(f"Error: Please enter a year (e.g. 2025).")
             filtered_movies = filter_movies(minimum_rating, start_year, end_year)
             for movie in filtered_movies:
                 print(f"{movie['title']} ({movie['year']}): {movie['rating']}")
